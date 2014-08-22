@@ -62,16 +62,19 @@
     var codeTextarea = document.getElementById('code');
     var postTextarea = document.getElementById('post');
     var rendered = document.getElementById('rendered');
+    var lsKey = 'postToCodePost';
 
     // exports
     window.POST_TO_CODE = {
       onPostChange: function() {
         updateCode();
         updateRendered();
+        updateLocalStorage();
       },
       onCodeChange: function() {
         updatePost();
         updateRendered();
+        updateLocalStorage();
       }
     };
 
@@ -114,14 +117,34 @@
     }
 
     function updatePost() {
-      var code = JSON.parse(codeTextarea.value);
-      postTextarea.value = detokenize(code);
+      try {
+        var code = JSON.parse(codeTextarea.value);
+        postTextarea.value = detokenize(code);
+      } catch(e) {
+        postTextarea.value = '';
+      }
     }
 
     function updateRendered() {
       var post = postTextarea.value;
       rendered.innerHTML = markdown.toHTML(post || 'type something...');
     }
+
+    // because hitting localStorage on every change makes it look a little janky, we're going to debounce this thing...
+    var localStorageTimeout = null;
+    function updateLocalStorage() {
+      window.clearTimeout(localStorageTimeout);
+      localStorageTimeout = window.setTimeout(function doUpdateLocalStorage() {
+        localStorage.setItem(lsKey, postTextarea.value);
+      }, 500);
+    }
+
+    
+
+    // load localStorage post
+    postTextarea.value = localStorage.getItem(lsKey);
+    updateCode();
+    updateRendered();
   })();
 </script>
 
