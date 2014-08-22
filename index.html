@@ -127,7 +127,7 @@
 
     function updateRendered() {
       var post = postTextarea.value;
-      rendered.innerHTML = markdown.toHTML(post || 'type something...');
+      rendered.innerHTML = markdown.toHTML(post || 'type something...', 'Maruku');
     }
 
     // because hitting localStorage on every change makes it look a little janky, we're going to debounce this thing...
